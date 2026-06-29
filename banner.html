@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1024px; height: 512px; overflow: hidden; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    position: relative;
+    background: #0c0e12;
+  }
+  #c { position: absolute; inset: 0; width: 1024px; height: 512px; }
+  /* left + bottom scrim for text legibility */
+  .scrim {
+    position: absolute; inset: 0; z-index: 2;
+    background:
+      linear-gradient(90deg, rgba(8,10,14,0.86) 0%, rgba(8,10,14,0.70) 30%, rgba(8,10,14,0.15) 55%, rgba(8,10,14,0) 70%),
+      linear-gradient(0deg, rgba(8,10,14,0.55) 0%, rgba(8,10,14,0) 30%);
+  }
+  .content { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; justify-content: center; padding: 0 72px; }
+  .hello { font-size: 19px; font-weight: 700; letter-spacing: 6px; text-transform: uppercase; color: #9aa3b8; margin-bottom: 14px; }
+  .name { font-size: 76px; font-weight: 800; letter-spacing: -2.5px; color: #f5f7fa; line-height: 1.04; text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+  .underline { margin-top: 18px; width: 360px; height: 8px; border-radius: 8px; background: linear-gradient(90deg, #B4FF3A, #2EE6C0, #FF5C39); }
+  .sub { margin-top: 26px; font-size: 20px; font-weight: 600; color: #b3bccf; }
+</style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="name">Choi<br>Hyunjun</div>
+    <div class="sub">Marketer turned engineer&nbsp; ·&nbsp; Marathoner</div>
+  </div>
+
+<script>
+// source dims (Toss asset) vs high-res output dims
+const SW = 1024, SH = 512;     // source
+const SCALE = 3;               // supersample factor
+const OW = SW * SCALE, OH = SH * SCALE; // output 3072x1536
+
+const cv = document.getElementById('c');
+cv.width = OW; cv.height = OH;
+const ctx = cv.getContext('2d');
+
+const stops = [[180,255,58],[46,230,192],[255,92,57]]; // lime -> mint -> coral
+function pal(fx){
+  let a,b,k;
+  if(fx<0.5){a=stops[0];b=stops[1];k=fx/0.5;} else {a=stops[1];b=stops[2];k=(fx-0.5)/0.5;}
+  return [a[0]+(b[0]-a[0])*k, a[1]+(b[1]-a[1])*k, a[2]+(b[2]-a[2])*k];
+}
+
+function sampleBilinear(src, sw, sh, sx, sy){
+  sx = Math.max(0, Math.min(sw-1, sx));
+  sy = Math.max(0, Math.min(sh-1, sy));
+  const x0=Math.floor(sx), y0=Math.floor(sy);
+  const x1=Math.min(sw-1,x0+1), y1=Math.min(sh-1,y0+1);
+  const fx=sx-x0, fy=sy-y0;
+  const idx=(x,y)=>(y*sw+x)*4;
+  const out=[0,0,0];
+  for(let c=0;c<3;c++){
+    const a=src[idx(x0,y0)+c], b=src[idx(x1,y0)+c], cc=src[idx(x0,y1)+c], dd=src[idx(x1,y1)+c];
+    const top=a+(b-a)*fx, bot=cc+(dd-cc)*fx;
+    out[c]=top+(bot-top)*fy;
+  }
+  return out;
+}
+
+const img = new Image();
+img.onload = () => {
+  // upscale source 2x with smoothing + slight blur to kill colormap grain/banding
+  const USW = SW*2, USH = SH*2;
+  const off = document.createElement('canvas');
+  off.width=USW; off.height=USH;
+  const octx = off.getContext('2d');
+  octx.imageSmoothingEnabled = true;
+  octx.imageSmoothingQuality = 'high';
+  octx.filter = 'blur(1.1px)';
+  octx.drawImage(img, 0, 0, USW, USH);
+  octx.filter = 'none';
+  const src = octx.getImageData(0,0,USW,USH).data;
+
+  const dst = ctx.createImageData(OW,OH);
+  const dd = dst.data;
+  const cx=SW/2, cy=SH/2, zoom=1.14;
+  const TAU=Math.PI*2;
+
+  for(let y=0;y<OH;y++){
+    for(let x=0;x<OW;x++){
+      const vx=x/OW, vy=y/OH;
+      // map output -> source(1024x512) space, with wave displacement
+      let sx = vx*SW + 46*Math.sin(vy*TAU*1.15 + 0.6) + 14*Math.sin(vx*TAU*2.3 + 1.7);
+      let sy = vy*SH + 32*Math.sin(vx*TAU*1.0 + 1.2) + 10*Math.sin(vy*TAU*2.0);
+      // zoom around center
+      sx = cx + (sx-cx)/zoom;
+      sy = cy + (sy-cy)/zoom;
+      // horizontal flip
+      sx = (SW-1) - sx;
+
+      // sample from the 2x upscaled+blurred source
+      const p = sampleBilinear(src, USW, USH, sx*2, sy*2);
+      const Y=(0.299*p[0]+0.587*p[1]+0.114*p[2])/255;
+      const G=pal(vx);
+      let r,g,b;
+      if(Y<0.5){ const t=Y/0.5; const s=0.30+0.70*t; r=G[0]*s; g=G[1]*s; b=G[2]*s; }
+      else { const t=(Y-0.5)/0.5; r=G[0]+(255-G[0])*t*0.92; g=G[1]+(255-G[1])*t*0.92; b=G[2]+(255-G[2])*t*0.92; }
+      const i=(y*OW+x)*4;
+      dd[i]=r|0; dd[i+1]=g|0; dd[i+2]=b|0; dd[i+3]=255;
+    }
+  }
+  ctx.putImageData(dst,0,0);
+  window.__recolorDone = true;
+};
+img.src = './images/ribbon-src.png';
+</script>
+</body>
+</html>
