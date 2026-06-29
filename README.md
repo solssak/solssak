@@ -8,9 +8,9 @@
 
 ## Open Source Contributions
 
-- **[colinhacks/zod](https://github.com/colinhacks/zod)** ([#5856](https://github.com/colinhacks/zod/pull/5856)) — Aligned `.merge()` refinement semantics with `.extend()` so refinements aren't silently dropped.
-- **[adobe/react-spectrum](https://github.com/adobe/react-spectrum)** ([#9659](https://github.com/adobe/react-spectrum/pull/9659)) — Exposed the `isRequired` render prop across DateField, TimeField, DatePicker & DateRangePicker.
-- **[TanStack/table](https://github.com/TanStack/table)** ([#6215](https://github.com/TanStack/table/pull/6215)) — Fixed a division-by-zero (NaN) bug in the column resize handler that left columns stuck at 0 width.
-- **[TanStack/hotkeys](https://github.com/TanStack/hotkeys)** ([#4](https://github.com/TanStack/hotkeys/pull/4)) — Added hotkey conflict detection with 4 configurable strategies (warn / error / replace / allow).
-- **[code-yeongyu/oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)** ([#1794](https://github.com/code-yeongyu/oh-my-openagent/pull/1794)) — Expanded `isGptModel()` to detect GPT models behind proxy providers, fixing an OpenAI API error from misapplied config.
-- **[manaflow-ai/cmux](https://github.com/manaflow-ai/cmux)** ([#2341](https://github.com/manaflow-ai/cmux/pull/2341)) — Fixed a SwiftUI bug hiding the tab bar in fullscreen + minimal mode; the fix was adopted by the maintainer in a follow-up commit.
+- **[colinhacks/zod](https://github.com/colinhacks/zod)** ([#5856](https://github.com/colinhacks/zod/pull/5856)) — Stopped `.merge()` from silently dropping refinements; now throws like `.pick()` / `.omit()` / `.extend()`.
+- **[TanStack/table](https://github.com/TanStack/table)** ([#6215](https://github.com/TanStack/table/pull/6215)) — Fixed a NaN bug that left resized columns permanently stuck at 0 width.
+- **[TanStack/hotkeys](https://github.com/TanStack/hotkeys)** ([#4](https://github.com/TanStack/hotkeys/pull/4)) — Added hotkey conflict detection with 4 strategies: warn / error / replace / allow.
+- **[adobe/react-spectrum](https://github.com/adobe/react-spectrum)** ([#9659](https://github.com/adobe/react-spectrum/pull/9659)) — Exposed `isRequired` in render props across DateField, TimeField, DatePicker & DateRangePicker.
+- **[code-yeongyu/oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)** ([#1794](https://github.com/code-yeongyu/oh-my-openagent/pull/1794)) — Fixed an OpenAI API error by teaching `isGptModel()` to recognize GPT models behind proxy providers.
+- **[manaflow-ai/cmux](https://github.com/manaflow-ai/cmux)** ([#2341](https://github.com/manaflow-ai/cmux/pull/2341)) — Diagnosed a fullscreen tab-bar bug in minimal mode; maintainer built on the fix and shipped it to main ([#2375](https://github.com/manaflow-ai/cmux/pull/2375)).
