@@ -1,4 +1,4 @@
-<img width="2164" height="727" alt="Codex 이미지 2026년 9월 21일 오후 01_52_19" src="https://github.com/user-attachments/assets/ea5abfd1-8be1-4ae1-aa60-4023e38f1030" />
+<img width="2172" height="724" alt="Choi Hyunjun — Product engineer" src="images/profile-banner.png" />
 
 > Marketer turned engineer. I build product systems, contribute upstream, and fix the details others overlook.
 
