@@ -1,10 +1,10 @@
 <img width="2172" height="724" alt="Choi Hyunjun — Product engineer" src="images/profile-banner.png" />
 
-> Marketer turned engineer. I build product systems, contribute upstream, and fix the details others overlook.
+> Marketer turned engineer. I build product systems, contribute upstream, and care about the small details.
 
-- 🚀 **Product engineering** — Marketing instinct translated into software and product decisions.
+- 🚀 **Product engineering** — I bring a marketer’s perspective to building software people want to use.
 - 🌱 **Open source** — I dig into upstream code, reproduce edge cases, and ship focused fixes.
-- 🏃 **Long-distance mindset** — I run a full marathon every year.
+- 🏃 **Long-distance mindset** — I run a marathon every year.
 
 ## Open Source Contributions
 
